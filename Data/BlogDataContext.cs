@@ -1,5 +1,5 @@
+using Blog.Models;
 using Microsoft.EntityFrameworkCore;
-using NewBlog.Models;
 
 namespace Blog.Data
 {
