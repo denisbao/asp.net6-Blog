@@ -1,4 +1,4 @@
-namespace NewBlog.Models
+namespace Blog.Models
 {
   public class User
   {
