@@ -102,7 +102,7 @@ namespace Blog.Controllers
         category.Slug = model.Slug;
         context.Categories.Update(category);
         await context.SaveChangesAsync();
-        return Ok(category);
+        return Ok(new ResultViewModel<Category>(category));
       }
       catch (DbUpdateException)
       {
@@ -130,7 +130,7 @@ namespace Blog.Controllers
 
         context.Categories.Remove(category);
         await context.SaveChangesAsync();
-        return Ok(category);
+        return Ok(new ResultViewModel<Category>(category));
       }
       catch (DbUpdateException)
       {
