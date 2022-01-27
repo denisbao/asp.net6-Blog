@@ -54,6 +54,9 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
+      if (!ModelState.IsValid)
+        return BadRequest();
+
       try
       {
         var category = new Category
@@ -84,6 +87,9 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
+      if (!ModelState.IsValid)
+        return BadRequest();
+
       try
       {
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
