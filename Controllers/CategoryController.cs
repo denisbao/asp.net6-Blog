@@ -17,11 +17,11 @@ namespace Blog.Controllers
       try
       {
         var categories = await context.Categories.ToListAsync();
-        return Ok(categories);
+        return Ok(new ResultViewModel<List<Category>>(categories));
       }
       catch
       {
-        return StatusCode(500, "COD008: Falha interna do servidor.");
+        return StatusCode(500, new ResultViewModel<List<Category>>("COD008: Falha interna do servidor."));
       }
     }
 
@@ -37,13 +37,13 @@ namespace Blog.Controllers
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
         if (category == null)
-          return NotFound();
+          return NotFound(new ResultViewModel<string>("COD009: Conteúdo não encontrado"));
 
-        return Ok(category);
+        return Ok(new ResultViewModel<Category>(category));
       }
       catch
       {
-        return StatusCode(500, "COD007: Falha interna do servidor.");
+        return StatusCode(500, new ResultViewModel<string>("COD007: Falha interna do servidor."));
       }
     }
 
@@ -67,15 +67,15 @@ namespace Blog.Controllers
         };
         await context.Categories.AddAsync(category);
         await context.SaveChangesAsync();
-        return Created($"v1/categories/{category.Id}", category);
+        return Created($"v1/categories/{category.Id}", new ResultViewModel<Category>(category));
       }
       catch (DbUpdateException)
       {
-        return StatusCode(500, "COD001: Não foi possível incluir a categoria.");
+        return StatusCode(500, new ResultViewModel<string>("COD001: Não foi possível incluir a categoria."));
       }
       catch
       {
-        return StatusCode(500, "COD002: Falha interna do servidor.");
+        return StatusCode(500, new ResultViewModel<string>("COD002: Falha interna do servidor."));
       }
     }
 
@@ -95,7 +95,7 @@ namespace Blog.Controllers
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
         if (category == null)
-          return NotFound();
+          return NotFound(new ResultViewModel<string>("COD010: Conteúdo não encontrado"));
 
         category.Name = model.Name;
         category.Slug = model.Slug;
@@ -105,11 +105,11 @@ namespace Blog.Controllers
       }
       catch (DbUpdateException)
       {
-        return StatusCode(500, "COD003: Não foi possível atualizar a categoria.");
+        return StatusCode(500, new ResultViewModel<string>("COD003: Não foi possível atualizar a categoria."));
       }
       catch
       {
-        return StatusCode(500, "COD004: Falha interna do servidor.");
+        return StatusCode(500, new ResultViewModel<string>("COD004: Falha interna do servidor."));
       }
     }
 
@@ -125,7 +125,7 @@ namespace Blog.Controllers
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
         if (category == null)
-          return NotFound();
+          return NotFound(new ResultViewModel<string>("COD011: Conteúdo não encontrado."));
 
         context.Categories.Remove(category);
         await context.SaveChangesAsync();
@@ -133,11 +133,11 @@ namespace Blog.Controllers
       }
       catch (DbUpdateException)
       {
-        return StatusCode(500, "COD005: Não foi possível excluir a categoria.");
+        return StatusCode(500, new ResultViewModel<string>("COD005: Não foi possível excluir a categoria."));
       }
       catch
       {
-        return StatusCode(500, "COD006: Falha interna do servidor.");
+        return StatusCode(500, new ResultViewModel<string>("COD006: Falha interna do servidor."));
       }
     }
   }
