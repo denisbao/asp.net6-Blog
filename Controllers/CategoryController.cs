@@ -1,4 +1,5 @@
 using Blog.Data;
+using Blog.Extensions;
 using Blog.Models;
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace Blog.Controllers
     )
     {
       if (!ModelState.IsValid)
-        return BadRequest();
+        return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
 
       try
       {
@@ -88,7 +89,7 @@ namespace Blog.Controllers
     )
     {
       if (!ModelState.IsValid)
-        return BadRequest();
+        return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
 
       try
       {
