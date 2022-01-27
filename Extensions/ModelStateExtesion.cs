@@ -4,6 +4,8 @@ namespace Blog.Extensions
 {
   public static class ModelStateExtension
   {
+    // Extension Method para o ModelState que cria uma lista de strings com
+    // os erros apontados pela validação executada pelo ModelState.
     public static List<string> GetErrors(this ModelStateDictionary modelState)
     {
       var result = new List<string>();
