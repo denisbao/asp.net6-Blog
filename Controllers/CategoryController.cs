@@ -45,6 +45,27 @@ namespace Blog.Controllers
     }
 
 
+    [HttpPut("v1/categories/{id:int}")]
+    public async Task<IActionResult> PutAsync(
+      [FromRoute] int id,
+      [FromBody] Category model,
+      [FromServices] BlogDataContext context
+    )
+    {
+      var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+
+      if (category == null)
+        return NotFound();
+
+      category.Name = model.Name;
+      category.Slug = model.Slug;
+      context.Categories.Update(category);
+      await context.SaveChangesAsync();
+
+      return Created($"v1/categories/{model.Id}", model);
+    }
+
+
 
   }
 }
