@@ -13,8 +13,15 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
-      var categories = await context.Categories.ToListAsync();
-      return Ok(categories);
+      try
+      {
+        var categories = await context.Categories.ToListAsync();
+        return Ok(categories);
+      }
+      catch
+      {
+        return StatusCode(500, "COD008: Falha interna do servidor.");
+      }
     }
 
 
@@ -24,12 +31,19 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
-      var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+      try
+      {
+        var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
-      if (category == null)
-        return NotFound();
+        if (category == null)
+          return NotFound();
 
-      return Ok(category);
+        return Ok(category);
+      }
+      catch
+      {
+        return StatusCode(500, "COD007: Falha interna do servidor.");
+      }
     }
 
 
@@ -63,16 +77,27 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
-      var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+      try
+      {
+        var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
-      if (category == null)
-        return NotFound();
+        if (category == null)
+          return NotFound();
 
-      category.Name = model.Name;
-      category.Slug = model.Slug;
-      context.Categories.Update(category);
-      await context.SaveChangesAsync();
-      return Ok(category);
+        category.Name = model.Name;
+        category.Slug = model.Slug;
+        context.Categories.Update(category);
+        await context.SaveChangesAsync();
+        return Ok(category);
+      }
+      catch (DbUpdateException)
+      {
+        return StatusCode(500, "COD003: Não foi possível atualizar a categoria.");
+      }
+      catch
+      {
+        return StatusCode(500, "COD004: Falha interna do servidor.");
+      }
     }
 
 
@@ -82,14 +107,25 @@ namespace Blog.Controllers
       [FromServices] BlogDataContext context
     )
     {
-      var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+      try
+      {
+        var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 
-      if (category == null)
-        return NotFound();
+        if (category == null)
+          return NotFound();
 
-      context.Categories.Remove(category);
-      await context.SaveChangesAsync();
-      return Ok(category);
+        context.Categories.Remove(category);
+        await context.SaveChangesAsync();
+        return Ok(category);
+      }
+      catch (DbUpdateException)
+      {
+        return StatusCode(500, "COD005: Não foi possível excluir a categoria.");
+      }
+      catch
+      {
+        return StatusCode(500, "COD006: Falha interna do servidor.");
+      }
     }
   }
 }
