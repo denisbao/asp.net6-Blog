@@ -61,7 +61,7 @@ namespace Blog.Controllers
       category.Slug = model.Slug;
       context.Categories.Update(category);
       await context.SaveChangesAsync();
-      return Created($"v1/categories/{model.Id}", model);
+      return Ok(category);
     }
 
 
