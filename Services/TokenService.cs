@@ -18,7 +18,15 @@ namespace Blog.Services
       var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
 
       // Configurações do token:
-      var tokenDescriptor = new SecurityTokenDescriptor();
+      var tokenDescriptor = new SecurityTokenDescriptor
+      {
+        Expires = DateTime.UtcNow.AddHours(2),
+        SigningCredentials = new SigningCredentials
+        (
+          new SymmetricSecurityKey(key),
+          SecurityAlgorithms.HmacSha256Signature
+        ),
+      };
 
       // Criação do token, baseado na configuração:
       var token = tokenHandler.CreateToken(tokenDescriptor);
