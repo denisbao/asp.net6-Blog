@@ -13,12 +13,37 @@ namespace Blog.Controllers
   public class AccountController : ControllerBase
   {
     [HttpPost("v1/accounts/login")]
-    public IActionResult Login(
-      [FromServices] TokenService _tokenService
+    public async Task<IActionResult> Login(
+      [FromBody] LoginViewModel request,
+      [FromServices] BlogDataContext context,
+      [FromServices] TokenService tokenService
     )
     {
-      var token = _tokenService.GenerateToken(null);
-      return Ok(token);
+      if (!ModelState.IsValid)
+        return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+
+      // VERIFICANDO USUÁRIO:
+      var user = await context.Users
+        .AsNoTracking()
+        .Include(x => x.Roles)
+        .FirstOrDefaultAsync(x => x.Email == request.Email);
+
+      if (user == null)
+        return StatusCode(401, new ResultViewModel<string>("Usuáiro ou senha inválidos."));
+
+      // VERIFICANDO SENHA: (package SecureIdentity)
+      if (!PasswordHasher.Verify(user.Password, request.Password))
+        return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
+
+      try
+      {
+        var token = tokenService.GenerateToken(user);
+        return Ok(new ResultViewModel<string>(token, null)); // se for passado só o token (string), o ViewModel vai achar que é um erro.
+      }
+      catch
+      {
+        return StatusCode(500, new ResultViewModel<string>("COD036: Falha interna no servidor."));
+      }
     }
 
 
