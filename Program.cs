@@ -23,7 +23,7 @@ app.MapControllers();
 app.Run();
 
 
-// Carregamento das configurações do AppSettings:
+// CARREGAMENTO DAS CONFIGURAÇÕES DO APPSETTINGS
 void LoadConfiguration(WebApplication app)
 {
   Configuration.JwtKey = app.Configuration.GetValue<string>("JwtKey");
