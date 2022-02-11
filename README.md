@@ -1,10 +1,9 @@
 # Blog
+<strong> Status: </strong> Em desenvolvimento 🚧
+<br>
 
 ### Descrição
 <p>API de um blog em arquitetura MVC utilizando ASP.NET6, Entity Framework e SqlServer.</p>
-<strong> Status do Projeto: </strong> Em desenvolvimento 🚧
-
-<br>
 
 ### Funcionalidades
 
