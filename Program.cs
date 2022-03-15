@@ -72,10 +72,13 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
   // Database Context:
   builder.Services.AddDbContext<BlogDataContext>();
+  // Serviço de envio de email:
+  builder.Services.AddTransient<EmailService>();
   // Token Lifetime:
   builder.Services.AddTransient<TokenService>();
   // .AddTransient();  // gera uma nova instância do objeto a cada chamada do [FromService]
   // .AddScoped();     // disponível por todo escopo do método que chamou o [FromService]
   // .AddSingleton();  // cria uma instância do objeto na execução da aplicação.
+  
 }
 
