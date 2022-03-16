@@ -7,6 +7,8 @@ using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace Blog.Controllers
 {
@@ -92,6 +94,49 @@ namespace Blog.Controllers
         return StatusCode(500, new ResultViewModel<string>("COD035: Falha interna no servidor"));
       }
 
+    }
+
+    [Authorize]
+    [HttpPost("v1/accounts/upload-image")]
+    public async Task<IActionResult> UploadImage(
+      [FromBody] UploadImageViewModel model,
+      [FromServices] BlogDataContext context
+    )
+    {
+      // ...geração do nome aleatório para o arquivo:
+      var fileName = $"{Guid.NewGuid().ToString()}.jpg";
+      // ...recuperando a imagem da requisicção e eliminando informações não desejadas:
+      var data = new Regex(@"^data:image\/[a-z]+;base64,").Replace(model.Base64Image,"");
+      // ...conversão da imagem para bytes:
+      var bytes = Convert.FromBase64String(data);
+
+      // ...salvando imagem em disco:
+      try
+      {
+        await System.IO.File.WriteAllBytesAsync($"wwwroot/images/{fileName}", bytes);
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new ResultViewModel<string>("COD036: Falha interna no servidor"));
+      }
+
+      // ... atualizando o usuário:
+      var user = await context.Users.FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+      if (user == null)
+        return NotFound(new ResultViewModel<Category>("Usuário não encontrado"));
+
+      user.Image = $"https://localhost:7200/images/{filename}";
+      try
+      {
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new ResultViewModel<string>("COD037: Falha interna no servidor"));
+      }
+
+      return Ok(new ResultViewModel<string>("Imagem alterada com sucesso", null));
     }
   }
 }
