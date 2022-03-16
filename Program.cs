@@ -15,8 +15,12 @@ ConfigureServices(builder);
 
 var app = builder.Build();
 LoadConfiguration(app);
+// CONFIGURAÇÕES DE AUTENTICAÇÃO E AUTORIZAÇÃO:
 app.UseAuthentication();
 app.UseAuthorization();
+// HABILITA A RENDERIZAÇÃO DE ARQUIVOS ESTÁTICOS (imagen, pdf, ...) NO DIRETÓRIO "WWWROOT":
+app.UseStaticFiles();
+// HABILITA O USO DOS CONTROLLERS:
 app.MapControllers();
 
 
