@@ -50,7 +50,8 @@ namespace Blog.Controllers
     [HttpPost("v1/accounts/")]
     public async Task<IActionResult> Post(
     [FromBody] RegisterViewModel request,
-    [FromServices] BlogDataContext context
+    [FromServices] BlogDataContext context,
+    [FromServices] EmailService emailService
     )
     {
       if (!ModelState.IsValid)
@@ -73,10 +74,12 @@ namespace Blog.Controllers
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
 
+        emailService.Send(user.Name, user.Email, "Bem vindo ao blog!", $"Sua senha é <strong>{password}</strong>");
+
         return Ok(new ResultViewModel<dynamic>(new
         {
           user = user.Email,
-          password  // APENAS PARA TESTES
+          password  // retornando a senha apenas para testes
         }));
       }
       catch (DbUpdateException)
