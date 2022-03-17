@@ -51,4 +51,32 @@ public class PostController : ControllerBase
        return StatusCode(500, new ResultViewModel<List<Post>>("COD038: Falha interna no servidor"));
     }
   }
+
+
+  [HttpGet("v1/posts/{id:int}")]
+  public async Task<IActionResult> DetailsAsync (
+    [FromServices] BlogDataContext context,
+    [FromRoute] int id
+  )
+  {
+    try
+    {
+      var post = await context
+        .Posts
+        .AsNoTracking()
+        .Include(x => x.Author)
+        .ThenInclude(x => x.Roles)
+        .Include(x => x.Category)
+        .FirstOrDefaultAsync(x => x.Id == id);  
+      
+      if (post == null)
+        return NotFound(new ResultViewModel<Post>("Conteúdo não encontrado"));
+
+      return Ok(new ResultViewModel<Post>(post));
+    }
+    catch (Exception ex)
+    {
+       return StatusCode(500, new ResultViewModel<Post>("COD039: Falha interna no servidor"));
+    }
+  }
 }
