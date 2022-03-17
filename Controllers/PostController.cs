@@ -79,4 +79,50 @@ public class PostController : ControllerBase
        return StatusCode(500, new ResultViewModel<Post>("COD039: Falha interna no servidor"));
     }
   }
+
+
+  [HttpGet("v1/posts/category/{category}")]
+  public async Task<IActionResult> GetByCategoryAsync (
+    [FromRoute] string category,
+    [FromServices] BlogDataContext context,
+    [FromQuery] int page = 0,
+    [FromQuery] int pageSize = 10
+  )
+  {
+    try
+    {
+      var countPosts = await context.Posts.AsNoTracking().CountAsync();
+      var posts = await context
+      .Posts
+      .AsNoTracking()
+      .Include(x => x.Author)
+      .Include(x => x.Category)
+      .Where(x => x.Category.Slug == category)
+      .Select(x => new ListPostsViewModel
+      {
+        Id = x.Id,
+        Title = x.Title,
+        Slug = x.Slug,
+        LastUpdateDate = x.LastUpdateDate,
+        Category = x.Category.Name,
+        Author = $"{x.Author.Name} ({x.Author.Email})"
+      })
+      .Skip(page * pageSize)
+      .Take(pageSize)
+      .OrderByDescending(x => x.LastUpdateDate)
+      .ToListAsync();
+
+      return Ok(new ResultViewModel<dynamic>(new 
+      {
+        total = countPosts,
+        page,
+        pageSize,
+        posts
+      }));
+    }
+    catch (Exception ex)
+    {
+       return StatusCode(500, new ResultViewModel<List<Post>>("COD040: Falha interna no servidor"));
+    }
+  }
 }
