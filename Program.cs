@@ -1,9 +1,11 @@
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json.Serialization;
 using Blog;
 using Blog.Data;
 using Blog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -19,6 +21,8 @@ LoadConfiguration(app);
 // CONFIGURAÇÕES DE AUTENTICAÇÃO E AUTORIZAÇÃO:
 app.UseAuthentication();
 app.UseAuthorization();
+// HABILITA A COMPRESSÃO DOS DADOS DE RESPOSTA:
+app.UseResponseCompression();
 // HABILITA A RENDERIZAÇÃO DE ARQUIVOS ESTÁTICOS (imagen, pdf, ...) NO DIRETÓRIO "WWWROOT":
 app.UseStaticFiles();
 // HABILITA O USO DOS CONTROLLERS:
@@ -64,6 +68,16 @@ void ConfigureAuthenticantion(WebApplicationBuilder builder)
 void ConfigureMvc(WebApplicationBuilder builder)
 {
   builder.Services.AddMemoryCache();
+  builder.Services.AddResponseCompression(options =>
+  {
+    // options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    // options.Providers.Add<CustomCompressionProvider>();
+  });
+  builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+  {
+    options.Level = CompressionLevel.Optimal;
+  });
   builder
     .Services
     .AddControllers()

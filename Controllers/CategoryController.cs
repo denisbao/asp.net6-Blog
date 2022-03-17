@@ -23,7 +23,7 @@ namespace Blog.Controllers
         var categories = cache.GetOrCreate("CategoriesCache", entry =>
         {
           entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-          return context.Categories.ToList();
+          return GetCategories(context);
         });
         return Ok(new ResultViewModel<List<Category>>(categories));
       }
@@ -31,6 +31,10 @@ namespace Blog.Controllers
       {
         return StatusCode(500, new ResultViewModel<List<Category>>("COD008: Falha interna do servidor."));
       }
+    }
+    private List<Category> GetCategories(BlogDataContext context)
+    {
+      return context.Categories.ToList();
     }
 
 
